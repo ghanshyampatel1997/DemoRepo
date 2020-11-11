@@ -1,0 +1,140 @@
+-------------------------index.html-----------------------------------------------
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>MiniProject2</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+
+
+-------------------------app.module.ts------------------------------------------------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import {FormsModule} from '@angular/forms'
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ContactlistComponent } from './contactlist/contactlist.component';
+import { LastNamePipe } from './contactlist/lastname.pipe';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ContactlistComponent,
+    LastNamePipe
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+-------------------------------------------app.component.html-----------------------------------
+<app-contactlist></app-contactlist>
+
+
+-----------------------------------------------------------------------------------------------
+-------------------------------Contactlist component-------------------------------------------
+-------------------------------------------------------------------------------------------------
+
+----------------------------contactlist.html-----------------------------------------------------
+<div class="container">
+    <div class="jumbotron">
+        <div style="height: 10%;">
+            <ul type="none">
+                <li style="float: left; align-items: center;"><span><img src="assets/Contact.jpg" alt="Contacts" style="width: 50%;"/></span></li>
+                <li><span><h1>Phone Book App</h1></span></li>
+            </ul>
+        </div>
+        <br/><br/><br/>
+        <br/>
+        <p>
+            <b style="float: left;">Contacts</b>     
+            <button style="float: right;" type="submit"  name="addContacts">Add Contacts</button>
+        </p>
+
+        <br/><br/>
+        
+              <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Search for contacts by last name" name="search">
+              <br/><br/>
+        <table class="table table-striped">
+            <tbody *ngFor="let i=index;let c of contactlist|lastnamepipe:searchText;">
+                <div class="bg-white" style="border:1px solid black;width: 100%;">
+                    <tr style="margin: 0%;">
+                        <td style="padding: 0%;"><b  style="font-size: 150%;">{{c.fname}}  {{c.lname}}</b></td>
+                        <td style="width: 65%;"></td>
+                        <td rowspan="2" style="float: right;padding: 0%;"><button type="button" (click)=delete(i) style="background-color: darkred;"><img src="assets/Delete.jpg" width="20%" ></button></td>
+                    </tr>
+                    <tr style="border:0px 1px 1px 1px;margin: 0px;">
+                        <td>{{c.phno}}</td>
+                    </tr>
+                </div>
+            </tbody>
+        </table>
+    </div>  
+</div>
+
+
+----------------------------------contactlist.ts-------------------------------------------------
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-contactlist',
+  templateUrl: './contactlist.component.html',
+  styleUrls: ['./contactlist.component.css']
+})
+export class ContactlistComponent implements OnInit {
+  contactlist:any=[];
+  searchText;
+  constructor() { 
+    this.contactlist=[
+      {fname:"Eric",lname:"Elliot",phno:"222-555-6575"},
+      {fname:"Steve",lname:"Jobs",phno:"220-454-6754"},
+      {fname:"Fred",lname:"Allen",phno:"210-657-9886"},
+      {fname:"Steve",lname:"Wozniak",phno:"34-675-8786"},
+      {fname:"Bill",lname:"Gates",phno:"234-567-9789"},
+    ]
+  }
+
+  delete(i:number){
+    this.contactlist.splice(i,1);
+  }
+
+  ngOnInit(): void {
+  }
+
+}
+
+-------------------------------------lastname.pipe.ts--------------------------------------------
+import { Pipe } from "@angular/core";  
+import { PipeTransform } from "@angular/core";  
+  
+@Pipe({  
+    name: 'lastnamepipe',
+  
+})  
+
+export class LastNamePipe implements PipeTransform {  
+    transform(contactlist: any, searchText: any) {  
+        if (searchText)  
+            return contactlist.filter(x=>x.lname.toLowerCase().startsWith(searchText.toLowerCase()));
+              
+        return contactlist;  
+    }  
+  
+}  
